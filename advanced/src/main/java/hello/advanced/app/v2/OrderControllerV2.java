@@ -1,14 +1,15 @@
-package hello.advanced.app.v1;
+package hello.advanced.app.v2;
 
-import hello.advanced.trace.TraceId;
 import hello.advanced.trace.TraceStatus;
 import hello.advanced.trace.hellotrace.HelloTraceV1;
+import hello.advanced.trace.hellotrace.HelloTraceV2;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * packageName    : hello.advanced.v0
- * fileName       : OrderServiceV2
+ * fileName       : OrderControllerV2
  * author         : Sora
  * date           : 2024-08-27
  * description    :
@@ -17,25 +18,27 @@ import org.springframework.stereotype.Service;
  * -----------------------------------------------------------
  * 2024-08-27        Sora       최초 생성
  */
-@Service
+@RestController
 @RequiredArgsConstructor
-public class OrderServiceV1 {
+public class OrderControllerV2 {
 
-    private final OrderRepositoryV1 orderRepository;
-    private final HelloTraceV1 trace;
+    private final OrderServiceV2 orderService;
+    private final HelloTraceV2 trace;
 
-    public void orderItem(String itemId){
+    @GetMapping("/v2/request")
+    public String request(String itemId){
 
         TraceStatus status = null;
 
         try{
-            status = trace.begin("OrderService.request()");
-            orderRepository.save(itemId);
+            status = trace.begin("OrderController.request()");
+            orderService.orderItem(status.getTraceId(),itemId);
             trace.end(status);
+            return "ok";
+
         }catch(Exception e){
             trace.exception(status, e);
             throw e;
         }
-
     }
 }
