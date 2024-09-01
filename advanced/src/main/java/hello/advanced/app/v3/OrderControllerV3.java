@@ -1,7 +1,7 @@
-package hello.advanced.app.v1;
+package hello.advanced.app.v3;
 
 import hello.advanced.trace.TraceStatus;
-import hello.advanced.trace.hellotrace.HelloTraceV1;
+import hello.advanced.trace.logtrace.LogTrace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,27 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
  * -----------------------------------------------------------
  * 2024-08-27        Sora       최초 생성
  */
+
 @RestController
 @RequiredArgsConstructor
-public class OrderControllerV1 {
+public class OrderControllerV3 {
+    private final OrderServiceV3 orderService;
+    private final LogTrace trace;
 
-    private final OrderServiceV1 orderService;
-    private final HelloTraceV1 trace;
-
-    @GetMapping("/v1/request")
-    public String request(String itemId){
-
+    @GetMapping("/v3/request")
+    public String request(String itemId) {
         TraceStatus status = null;
-
-        try{
+        try {
             status = trace.begin("OrderController.request()");
             orderService.orderItem(itemId);
             trace.end(status);
             return "ok";
-
-        }catch(Exception e){
+        } catch (Exception e) {
             trace.exception(status, e);
-            throw e;
+            throw e; //예외를 꼭 다시 던져주어야 한다.
         }
     }
 }
